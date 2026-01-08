@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useQuizStore } from '../store/quizStore';
 
 function QuizTake({ quizId, onComplete, onCancel }) {
@@ -8,9 +8,32 @@ function QuizTake({ quizId, onComplete, onCancel }) {
   const [timeRemaining, setTimeRemaining] = useState(null);
   const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
 
+  const initQuiz = useCallback(async () => {
+    try {
+      const data = await startAttempt(quizId);
+      setAttemptData(data);
+      if (data.time_limit_seconds) {
+        setTimeRemaining(data.time_limit_seconds);
+      }
+    } catch (error) {
+      console.error('Failed to start quiz:', error);
+    }
+  }, [quizId, startAttempt]);
+
+  const handleSubmit = useCallback(async () => {
+    setShowConfirmSubmit(false);
+    try {
+      const result = await submitAttempt(attemptData.attempt_id);
+      onComplete(result);
+    } catch (error) {
+      console.error('Failed to submit quiz:', error);
+    }
+  }, [attemptData, onComplete, submitAttempt]);
+
   useEffect(() => {
-    initQuiz();
-  }, [quizId]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void initQuiz();
+  }, [initQuiz]);
 
   useEffect(() => {
     if (!attemptData || !attemptData.time_limit_seconds) return;
@@ -27,19 +50,7 @@ function QuizTake({ quizId, onComplete, onCancel }) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [attemptData]);
-
-  const initQuiz = async () => {
-    try {
-      const data = await startAttempt(quizId);
-      setAttemptData(data);
-      if (data.time_limit_seconds) {
-        setTimeRemaining(data.time_limit_seconds);
-      }
-    } catch (error) {
-      console.error('Failed to start quiz:', error);
-    }
-  };
+  }, [attemptData, handleSubmit]);
 
   const handleAnswer = (attemptQuestionId, value, isText = false) => {
     const question = attemptData.questions[currentQuestionIndex];
@@ -55,16 +66,6 @@ function QuizTake({ quizId, onComplete, onCancel }) {
         ? selectedIds.filter(id => id !== value)
         : [...selectedIds, value];
       setAnswer(attemptQuestionId, newSelectedIds, null);
-    }
-  };
-
-  const handleSubmit = async () => {
-    setShowConfirmSubmit(false);
-    try {
-      const result = await submitAttempt(attemptData.attempt_id);
-      onComplete(result);
-    } catch (error) {
-      console.error('Failed to submit quiz:', error);
     }
   };
 

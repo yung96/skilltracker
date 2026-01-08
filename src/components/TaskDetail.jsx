@@ -1,37 +1,39 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '../api';
 
 function TaskDetail({ task, user, onClose }) {
   const [comments, setComments] = useState([]);
   const [attachments, setAttachments] = useState([]);
   const [newComment, setNewComment] = useState('');
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingCommentText, setEditingCommentText] = useState('');
   const [progress, setProgress] = useState(task.progress);
   const [status, setStatus] = useState(task.status);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    loadComments();
-    loadAttachments();
-  }, [task.id]);
-
-  const loadComments = async () => {
+  const loadComments = useCallback(async () => {
     try {
       const data = await api.getComments(task.id);
       setComments(data);
     } catch (err) {
       console.error('Ошибка загрузки комментариев:', err);
     }
-  };
+  }, [task.id]);
 
-  const loadAttachments = async () => {
+  const loadAttachments = useCallback(async () => {
     try {
       const data = await api.getAttachments(task.id);
       setAttachments(data);
     } catch (err) {
       console.error('Ошибка загрузки вложений:', err);
     }
-  };
+  }, [task.id]);
+
+  useEffect(() => {
+    void loadComments();
+    void loadAttachments();
+  }, [loadComments, loadAttachments]);
 
   const handleAddComment = async (e) => {
     e.preventDefault();
@@ -44,6 +46,64 @@ function TaskDetail({ task, user, onClose }) {
       await loadComments();
     } catch (err) {
       setError(err.message || 'Ошибка добавления комментария');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const canEditComment = (comment) => user.role === 'manager' || comment.user_id === user.id;
+
+  const startEditComment = (comment) => {
+    setEditingCommentId(comment.id);
+    setEditingCommentText(comment.text || '');
+  };
+
+  const cancelEditComment = () => {
+    setEditingCommentId(null);
+    setEditingCommentText('');
+  };
+
+  const handleSaveComment = async (comment) => {
+    try {
+      setLoading(true);
+      setError('');
+      await api.updateComment(task.id, comment.id, editingCommentText);
+      cancelEditComment();
+      await loadComments();
+    } catch (err) {
+      setError(err.message || 'Ошибка обновления комментария');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteComment = async (comment) => {
+    if (!confirm('Удалить комментарий?')) return;
+    try {
+      setLoading(true);
+      setError('');
+      await api.deleteComment(task.id, comment.id);
+      if (editingCommentId === comment.id) cancelEditComment();
+      await loadComments();
+    } catch (err) {
+      setError(err.message || 'Ошибка удаления комментария');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const canDeleteAttachment = (attachment) =>
+    user.role === 'manager' || attachment.uploaded_by_id === user.id;
+
+  const handleDeleteAttachment = async (attachment) => {
+    if (!confirm(`Удалить файл "${attachment.original_filename}"?`)) return;
+    try {
+      setLoading(true);
+      setError('');
+      await api.deleteAttachment(task.id, attachment.id);
+      await loadAttachments();
+    } catch (err) {
+      setError(err.message || 'Ошибка удаления файла');
     } finally {
       setLoading(false);
     }
@@ -202,7 +262,61 @@ function TaskDetail({ task, user, onClose }) {
                     {formatDate(comment.created_at)}
                   </span>
                 </div>
-                <div className="comment-text">{comment.text}</div>
+                {editingCommentId === comment.id ? (
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      value={editingCommentText}
+                      onChange={(e) => setEditingCommentText(e.target.value)}
+                      disabled={loading}
+                      style={{ flex: 1 }}
+                    />
+                    <button
+                      className="btn btn-primary"
+                      style={{ width: 'auto', padding: '8px 12px' }}
+                      onClick={() => handleSaveComment(comment)}
+                      disabled={loading || !editingCommentText.trim()}
+                      type="button"
+                    >
+                      💾
+                    </button>
+                    <button
+                      className="btn btn-secondary"
+                      style={{ width: 'auto', padding: '8px 12px' }}
+                      onClick={cancelEditComment}
+                      disabled={loading}
+                      type="button"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
+                    <div className="comment-text" style={{ flex: 1 }}>{comment.text}</div>
+                    {canEditComment(comment) && (
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          className="btn btn-secondary"
+                          style={{ width: 'auto', padding: '6px 10px' }}
+                          onClick={() => startEditComment(comment)}
+                          disabled={loading}
+                          type="button"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          className="btn-cancel"
+                          style={{ width: 'auto', padding: '6px 10px', background: '#ff4757', color: 'white' }}
+                          onClick={() => handleDeleteComment(comment)}
+                          disabled={loading}
+                          type="button"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -246,6 +360,18 @@ function TaskDetail({ task, user, onClose }) {
                       {formatDate(attachment.created_at)}
                     </div>
                   </div>
+                  {canDeleteAttachment(attachment) && (
+                    <button
+                      className="btn-cancel"
+                      style={{ width: 'auto', padding: '6px 10px', background: '#ff4757', color: 'white' }}
+                      onClick={() => handleDeleteAttachment(attachment)}
+                      disabled={loading}
+                      type="button"
+                      title="Удалить файл"
+                    >
+                      🗑️
+                    </button>
+                  )}
                 </div>
               ))}
             </div>

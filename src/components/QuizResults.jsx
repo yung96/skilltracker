@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useQuizStore } from '../store/quizStore';
 
 function QuizResults({ attempt, onClose }) {
@@ -6,13 +6,7 @@ function QuizResults({ attempt, onClose }) {
   const [detailedAttempt, setDetailedAttempt] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (attempt && attempt.id) {
-      loadDetailedAttempt();
-    }
-  }, [attempt]);
-
-  const loadDetailedAttempt = async () => {
+  const loadDetailedAttempt = useCallback(async () => {
     setLoading(true);
     try {
       const detailed = await getAttempt(attempt.id);
@@ -22,7 +16,13 @@ function QuizResults({ attempt, onClose }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [attempt?.id, getAttempt]);
+
+  useEffect(() => {
+    if (attempt && attempt.id) {
+      void loadDetailedAttempt();
+    }
+  }, [attempt, loadDetailedAttempt]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '-';

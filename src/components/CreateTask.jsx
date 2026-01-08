@@ -13,22 +13,24 @@ function CreateTask({ onClose, onCreated }) {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    loadUsers();
-  }, []);
-
-  const loadUsers = async () => {
-    try {
-      const data = await api.getUsers();
-      // Фильтруем только сотрудников
-      const employees = data.filter(u => u.role === 'employee');
-      setUsers(employees);
-      if (employees.length > 0) {
-        setEmployeeId(employees[0].id.toString());
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await api.getUsers();
+        const employees = data.filter((u) => u.role === 'employee');
+        if (!mounted) return;
+        setUsers(employees);
+        if (employees.length > 0) {
+          setEmployeeId(employees[0].id.toString());
+        }
+      } catch {
+        if (mounted) setError('Ошибка загрузки пользователей');
       }
-    } catch (err) {
-      setError('Ошибка загрузки пользователей');
-    }
-  };
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

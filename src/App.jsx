@@ -19,7 +19,7 @@ function App() {
       const userData = await api.getMe();
       setUser(userData);
       setView('dashboard');
-    } catch (error) {
+    } catch {
       setUser(null);
     } finally {
       setLoading(false);
@@ -27,23 +27,14 @@ function App() {
   };
 
   const handleLogin = async (username, password) => {
-    try {
-      const data = await api.login(username, password);
-      setUser(data.user);
-      setView('dashboard');
-    } catch (error) {
-      throw error;
-    }
+    const data = await api.login(username, password);
+    setUser(data.user);
+    setView('dashboard');
   };
 
   const handleRegister = async (username, password, name, role) => {
-    try {
-      await api.register(username, password, name, role);
-      // После регистрации входим
-      await handleLogin(username, password);
-    } catch (error) {
-      throw error;
-    }
+    await api.register(username, password, name, role);
+    await handleLogin(username, password);
   };
 
   const handleLogout = async () => {

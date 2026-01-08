@@ -88,6 +88,17 @@ class ApiClient {
     });
   }
 
+  async updateUser(userId, data) {
+    return this.request(`/users/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteUser(userId) {
+    return this.request(`/users/${userId}`, { method: 'DELETE' });
+  }
+
   // Tasks
   async getTasks() {
     return this.request('/tasks');
@@ -141,6 +152,17 @@ class ApiClient {
     });
   }
 
+  async updateComment(taskId, commentId, text) {
+    return this.request(`/tasks/${taskId}/comments/${commentId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ text }),
+    });
+  }
+
+  async deleteComment(taskId, commentId) {
+    return this.request(`/tasks/${taskId}/comments/${commentId}`, { method: 'DELETE' });
+  }
+
   // Attachments
   async getAttachments(taskId) {
     return this.request(`/tasks/${taskId}/attachments`);
@@ -167,6 +189,10 @@ class ApiClient {
     }
 
     return response.json();
+  }
+
+  async deleteAttachment(taskId, attachmentId) {
+    return this.request(`/tasks/${taskId}/attachments/${attachmentId}`, { method: 'DELETE' });
   }
 
   // Quizzes
@@ -230,6 +256,21 @@ class ApiClient {
     });
   }
 
+  async getSections(quizId) {
+    return this.request(`/quizzes/${quizId}/sections`);
+  }
+
+  async updateSection(quizId, sectionId, data) {
+    return this.request(`/quizzes/${quizId}/sections/${sectionId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteSection(quizId, sectionId) {
+    return this.request(`/quizzes/${quizId}/sections/${sectionId}`, { method: 'DELETE' });
+  }
+
   async addQuestionsToSection(quizId, sectionId, questionIds) {
     return this.request(`/quizzes/${quizId}/sections/${sectionId}/questions`, {
       method: 'POST',
@@ -242,6 +283,21 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify(data),
     });
+  }
+
+  async getQuizAssignments(quizId) {
+    return this.request(`/quizzes/${quizId}/assignments`);
+  }
+
+  async updateAssignment(assignmentId, data) {
+    return this.request(`/quizzes/assignments/${assignmentId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteAssignment(assignmentId) {
+    return this.request(`/quizzes/assignments/${assignmentId}`, { method: 'DELETE' });
   }
 
   async getMyAssignments() {
