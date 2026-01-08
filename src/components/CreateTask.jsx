@@ -52,8 +52,8 @@ function CreateTask({ onClose, onCreated }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay">
+      <div className="modal">
         <h2>Создать задачу</h2>
 
         {error && <div className="error-message">{error}</div>}

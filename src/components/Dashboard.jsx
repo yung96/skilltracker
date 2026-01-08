@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import TaskList from './TaskList';
 import UserList from './UserList';
+import QuizManager from './QuizManager';
+import MyQuizAssignments from './MyQuizAssignments';
 
 function Dashboard({ user, onLogout }) {
   const [activeTab, setActiveTab] = useState('tasks');
@@ -32,6 +34,12 @@ function Dashboard({ user, onLogout }) {
           >
             Задачи
           </button>
+          <button
+            className={`tab ${activeTab === 'quizzes' ? 'active' : ''}`}
+            onClick={() => setActiveTab('quizzes')}
+          >
+            Квизы
+          </button>
           {user.role === 'manager' && (
             <button
               className={`tab ${activeTab === 'users' ? 'active' : ''}`}
@@ -43,6 +51,9 @@ function Dashboard({ user, onLogout }) {
         </div>
 
         {activeTab === 'tasks' && <TaskList user={user} />}
+        {activeTab === 'quizzes' && (
+          user.role === 'manager' ? <QuizManager /> : <MyQuizAssignments />
+        )}
         {activeTab === 'users' && user.role === 'manager' && (
           <UserList />
         )}

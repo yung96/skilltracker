@@ -112,8 +112,9 @@ function TaskDetail({ task, user, onClose }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+
+<div className="modal-overlay">
+      <div className="modal">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '20px' }}>
           <h2>{task.title}</h2>
           <button

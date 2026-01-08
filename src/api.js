@@ -168,6 +168,106 @@ class ApiClient {
 
     return response.json();
   }
+
+  // Quizzes
+  async getQuizzes() {
+    return this.request('/quizzes');
+  }
+
+  async createQuiz(data) {
+    return this.request('/quizzes', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateQuiz(quizId, data) {
+    return this.request(`/quizzes/${quizId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteQuiz(quizId) {
+    return this.request(`/quizzes/${quizId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getQuestions(type = null) {
+    const params = type ? `?question_type=${type}` : '';
+    return this.request(`/quizzes/questions${params}`);
+  }
+
+  async getQuestion(questionId) {
+    return this.request(`/quizzes/questions/${questionId}`);
+  }
+
+  async createQuestion(data) {
+    return this.request('/quizzes/questions', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateQuestion(questionId, data) {
+    return this.request(`/quizzes/questions/${questionId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteQuestion(questionId) {
+    return this.request(`/quizzes/questions/${questionId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async createSection(quizId, data) {
+    return this.request(`/quizzes/${quizId}/sections`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async addQuestionsToSection(quizId, sectionId, questionIds) {
+    return this.request(`/quizzes/${quizId}/sections/${sectionId}/questions`, {
+      method: 'POST',
+      body: JSON.stringify(questionIds),
+    });
+  }
+
+  async assignQuiz(quizId, data) {
+    return this.request(`/quizzes/${quizId}/assignments`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getMyAssignments() {
+    return this.request('/quizzes/assignments/my');
+  }
+
+  async startAttempt(quizId) {
+    return this.request(`/quizzes/${quizId}/attempts`, {
+      method: 'POST',
+    });
+  }
+
+  async submitAttempt(attemptId, answers) {
+    return this.request(`/quizzes/attempts/${attemptId}/submit`, {
+      method: 'POST',
+      body: JSON.stringify({ answers }),
+    });
+  }
+
+  async getAttempt(attemptId) {
+    return this.request(`/quizzes/attempts/${attemptId}`);
+  }
+
+  async getQuizAnalytics(quizId) {
+    return this.request(`/quizzes/${quizId}/analytics`);
+  }
 }
 
 export const api = new ApiClient();
