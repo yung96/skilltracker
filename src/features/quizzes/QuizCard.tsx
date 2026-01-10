@@ -10,7 +10,7 @@ interface QuizCardProps {
 
 export function QuizCard({ quiz, onDelete }: QuizCardProps) {
   return (
-    <Card hover className="p-6">
+    <Card hover className="p-6 h-full flex flex-col">
       <div className="flex items-start justify-between mb-4">
         <Badge variant={quiz.status === 'published' ? 'success' : 'warning'}>
           {quiz.status === 'published' ? 'Опубликован' : 'Черновик'}
@@ -20,15 +20,17 @@ export function QuizCard({ quiz, onDelete }: QuizCardProps) {
         </span>
       </div>
 
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+      <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem] leading-snug">
         {quiz.title}
       </h3>
 
-      {quiz.description && (
-        <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-          {quiz.description}
-        </p>
-      )}
+      <div className="mb-4 min-h-[2.5rem]">
+        {quiz.description ? (
+          <p className="text-sm text-gray-600 line-clamp-2">
+            {quiz.description}
+          </p>
+        ) : null}
+      </div>
 
       <div className="space-y-2 text-sm text-gray-500 mb-4">
         {quiz.time_limit_seconds && (
@@ -52,7 +54,7 @@ export function QuizCard({ quiz, onDelete }: QuizCardProps) {
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 mt-auto">
         <Link to={`/quizzes/${quiz.id}`} className="flex-1">
           <Button variant="secondary" size="sm" className="w-full">
             Открыть
