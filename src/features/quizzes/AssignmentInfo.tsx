@@ -7,6 +7,9 @@ interface AssignmentInfoProps {
 }
 
 export function AssignmentInfo({ assignmentDetail }: AssignmentInfoProps) {
+  const remaining = assignmentDetail.assignment.remaining_attempts;
+  const hasRemaining = remaining !== null && remaining !== undefined;
+
   return (
     <Card className="p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Информация о назначении</h3>
@@ -33,8 +36,8 @@ export function AssignmentInfo({ assignmentDetail }: AssignmentInfoProps) {
           <p className="text-sm text-gray-500">Попыток использовано</p>
           <p className="font-medium text-gray-900">
             {assignmentDetail.assignment.attempts_taken}
-            {assignmentDetail.assignment.remaining_attempts !== null && 
-              ` / ${assignmentDetail.assignment.attempts_taken + assignmentDetail.assignment.remaining_attempts}`}
+            {hasRemaining &&
+              ` / ${assignmentDetail.assignment.attempts_taken + remaining}`}
           </p>
         </div>
         <div>

@@ -1,5 +1,4 @@
-import { Link } from 'react-router-dom';
-import { Input, Textarea, Select, Button, Badge } from '@/shared/ui';
+import { Input, Textarea, Select, Button } from '@/shared/ui';
 import { useQuestionForm } from '@/shared/lib/hooks/useQuestionForm';
 import type { Question, QuestionType } from '@/shared/api/types';
 
@@ -11,7 +10,7 @@ interface QuestionFormProps {
   isLoading: boolean;
 }
 
-export function QuestionForm({ question, questions, onSubmit, onCancel, isLoading }: QuestionFormProps) {
+export function QuestionForm({ question, onSubmit, onCancel, isLoading }: QuestionFormProps) {
   const {
     formData,
     setType,
@@ -24,7 +23,6 @@ export function QuestionForm({ question, questions, onSubmit, onCancel, isLoadin
     addTextAnswer,
     removeTextAnswer,
     updateTextAnswer,
-    setData,
   } = useQuestionForm(
     question ? {
       text: question.text,

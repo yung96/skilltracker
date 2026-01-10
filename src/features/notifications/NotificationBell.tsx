@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { notificationsApi, Notification } from '@/shared/api';
-import { Badge } from '@/shared/ui';
-import { cn } from '@/shared/lib/utils';
 import { NotificationItem } from './NotificationItem';
 
 export function NotificationBell() {

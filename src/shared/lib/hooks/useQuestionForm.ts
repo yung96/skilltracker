@@ -1,16 +1,20 @@
 import { useState } from 'react';
 import type { QuestionCreate, QuestionType } from '@/shared/api/types';
 
+type QuestionFormData = Omit<QuestionCreate, 'options' | 'text_answers'> & {
+  options: NonNullable<QuestionCreate['options']>;
+  text_answers: NonNullable<QuestionCreate['text_answers']>;
+};
+
 export function useQuestionForm(initialData?: QuestionCreate) {
-  const [formData, setFormData] = useState<QuestionCreate>(
-    initialData || {
-      text: '',
-      type: 'single',
-      explanation: '',
-      options: [],
-      text_answers: [],
-    }
-  );
+  const [formData, setFormData] = useState<QuestionFormData>(() => {
+    const base = initialData ?? { text: '', type: 'single', explanation: '' };
+    return {
+      ...base,
+      options: base.options ?? [],
+      text_answers: base.text_answers ?? [],
+    };
+  });
 
   const setType = (type: QuestionType) => {
     setFormData({ ...formData, type });
@@ -84,7 +88,11 @@ export function useQuestionForm(initialData?: QuestionCreate) {
   };
 
   const setData = (data: QuestionCreate) => {
-    setFormData(data);
+    setFormData({
+      ...data,
+      options: data.options ?? [],
+      text_answers: data.text_answers ?? [],
+    });
   };
 
   return {

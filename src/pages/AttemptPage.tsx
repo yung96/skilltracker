@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuizzesStore } from '@/entities/quiz/model/store';
-import { Card, Button, Loader, Badge, Progress } from '@/shared/ui';
+import { Card, Button, Badge, Progress } from '@/shared/ui';
 import type { AnswerSubmission } from '@/shared/api/types';
 
 export function AttemptPage() {
@@ -45,8 +45,8 @@ export function AttemptPage() {
       ...answers,
       [attemptQuestionId]: {
         attempt_question_id: attemptQuestionId,
-        selected_option_ids: answer.selected_option_ids || [],
-        text_answer: answer.text_answer || null,
+        selected_option_ids: answer.selected_option_ids ?? [],
+        text_answer: answer.text_answer ?? undefined,
       },
     });
   };
@@ -62,7 +62,7 @@ export function AttemptPage() {
         answersList.push({
           attempt_question_id: q.attempt_question_id,
           selected_option_ids: [],
-          text_answer: null,
+          text_answer: undefined,
         });
       }
     });
@@ -126,6 +126,7 @@ export function AttemptPage() {
         {currentAttempt.questions.map((q, index) => {
           const question = q.question;
           const currentAnswer = answers[q.attempt_question_id];
+          const selectedOptionIds = currentAnswer?.selected_option_ids ?? [];
 
           return (
             <Card key={q.attempt_question_id} className="p-6">
@@ -151,7 +152,7 @@ export function AttemptPage() {
                         <label
                           key={option.id}
                           className={`flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${
-                            currentAnswer?.selected_option_ids.includes(option.id)
+                            selectedOptionIds.includes(option.id)
                               ? 'border-primary-500 bg-primary-50'
                               : 'border-gray-200 hover:border-primary-300'
                           }`}
@@ -159,7 +160,7 @@ export function AttemptPage() {
                           <input
                             type="radio"
                             name={`question-${q.attempt_question_id}`}
-                            checked={currentAnswer?.selected_option_ids.includes(option.id) || false}
+                            checked={selectedOptionIds.includes(option.id)}
                             onChange={() => handleAnswerChange(q.attempt_question_id, {
                               selected_option_ids: [option.id],
                             })}
@@ -175,7 +176,7 @@ export function AttemptPage() {
                   {question.type === 'multiple' && question.options && (
                     <div className="space-y-2">
                       {question.options.map((option) => {
-                        const isSelected = currentAnswer?.selected_option_ids.includes(option.id) || false;
+                        const isSelected = selectedOptionIds.includes(option.id);
                         
                         return (
                           <label
@@ -190,7 +191,7 @@ export function AttemptPage() {
                               type="checkbox"
                               checked={isSelected}
                               onChange={(e) => {
-                                const current = currentAnswer?.selected_option_ids || [];
+                                const current = selectedOptionIds;
                                 const newIds = e.target.checked
                                   ? [...current, option.id]
                                   : current.filter(id => id !== option.id);

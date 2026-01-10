@@ -36,6 +36,32 @@ export function TaskDetailPage() {
   const isManager = user?.role === 'manager';
   const canEdit = isManager || selectedTask?.employee_id === user?.id;
 
+  const getTaskStatusLabel = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'Ожидает';
+      case 'in_progress':
+        return 'В работе';
+      case 'done':
+        return 'Выполнено';
+      default:
+        return status;
+    }
+  };
+
+  const getTaskStatusVariant = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'pending';
+      case 'in_progress':
+        return 'in-progress';
+      case 'done':
+        return 'done';
+      default:
+        return 'default';
+    }
+  };
+
   useEffect(() => {
     if (taskId) {
       fetchTask(taskId);
@@ -86,10 +112,8 @@ export function TaskDetailPage() {
               Назад
             </Button>
           </Link>
-          <Badge variant={selectedTask.status}>
-            {selectedTask.status === 'pending' && 'Ожидает'}
-            {selectedTask.status === 'in_progress' && 'В работе'}
-            {selectedTask.status === 'done' && 'Выполнено'}
+          <Badge variant={getTaskStatusVariant(selectedTask.status)}>
+            {getTaskStatusLabel(selectedTask.status)}
           </Badge>
         </div>
         {isManager && (

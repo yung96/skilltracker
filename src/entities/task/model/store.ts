@@ -6,7 +6,6 @@ import type {
   TaskUpdate, 
   ProgressUpdate,
   Comment,
-  CommentCreate,
   Attachment,
 } from '@/shared/api/types';
 
@@ -50,7 +49,7 @@ interface TasksState {
 /**
  * Store для управления задачами
  */
-export const useTasksStore = create<TasksState>((set, get) => ({
+export const useTasksStore = create<TasksState>((set) => ({
   tasks: [],
   selectedTask: null,
   comments: [],

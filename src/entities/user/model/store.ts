@@ -48,7 +48,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   register: async (data) => {
     set({ isLoading: true, error: null });
     try {
-      const user = await authApi.register(data);
+      await authApi.register(data);
       // После регистрации автоматически логинимся
       await authApi.login({ username: data.username, password: data.password });
       const currentUser = await authApi.getCurrentUser();
@@ -137,7 +137,7 @@ interface UsersState {
 /**
  * Store для управления пользователями
  */
-export const useUsersStore = create<UsersState>((set, get) => ({
+export const useUsersStore = create<UsersState>((set) => ({
   users: [],
   selectedUser: null,
   isLoading: false,

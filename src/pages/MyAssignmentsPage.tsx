@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useQuizzesStore } from '@/entities/quiz/model/store';
 import { Card, Badge, Button, Loader } from '@/shared/ui';
 import { formatDate } from '@/shared/lib/utils';
@@ -83,9 +83,9 @@ export function MyAssignmentsPage() {
                     </svg>
                     <span>
                       Попыток: {item.assignment.attempts_taken}
-                      {item.assignment.remaining_attempts !== null && 
-                        ` / Осталось: ${item.assignment.remaining_attempts}`
-                      }
+                      {item.assignment.remaining_attempts !== null &&
+                        item.assignment.remaining_attempts !== undefined &&
+                        ` / Осталось: ${item.assignment.remaining_attempts}`}
                     </span>
                   </div>
                   {item.assignment.due_at && (

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useQuizzesStore } from '@/entities/quiz/model/store';
 import { Card, Badge, Button, Loader } from '@/shared/ui';
 import { formatDate } from '@/shared/lib/utils';
@@ -7,7 +7,6 @@ import { ROUTES } from '@/shared/config/constants';
 
 export function AttemptResultPage() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { attemptResult, getAttempt, clearAttempt, isLoading } = useQuizzesStore();
 
   const attemptId = parseInt(id || '0');

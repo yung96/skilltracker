@@ -13,7 +13,6 @@ import type {
   QuizAssignmentCreate,
   AssignmentListItem,
   AttemptStartResponse,
-  AttemptSubmitRequest,
   AttemptRead,
   QuizAnalytics,
   AnswerSubmission,
@@ -76,7 +75,7 @@ interface QuizzesState {
 /**
  * Store для управления тестами
  */
-export const useQuizzesStore = create<QuizzesState>((set, get) => ({
+export const useQuizzesStore = create<QuizzesState>((set) => ({
   quizzes: [],
   selectedQuiz: null,
   questions: [],
