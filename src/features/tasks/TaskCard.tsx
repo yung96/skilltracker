@@ -58,7 +58,7 @@ export function TaskCard({ task }: TaskCardProps) {
           ) : null}
         </div>
 
-        <div className="space-y-2 text-sm text-gray-500">
+        <div className="space-y-2 text-sm text-gray-500 mb-4">
           {task.employee && (
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -78,11 +78,13 @@ export function TaskCard({ task }: TaskCardProps) {
         </div>
 
         {/* Прогресс бар */}
-        <div className="mt-auto pt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-primary-500 transition-all duration-300"
-            style={{ width: `${task.progress}%` }}
-          />
+        <div className="mt-auto">
+          <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-primary-500 transition-all duration-300 rounded-full"
+              style={{ width: `${task.progress}%` }}
+            />
+          </div>
         </div>
       </Card>
     </Link>
