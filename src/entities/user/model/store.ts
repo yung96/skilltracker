@@ -3,6 +3,11 @@ import { authApi, usersApi, getErrorMessage } from '@/shared/api';
 import type { User, LoginRequest, UserCreate } from '@/shared/api/types';
 import { STORAGE_KEYS } from '@/shared/config/constants';
 
+const hasStoredToken =
+  typeof window !== 'undefined' &&
+  typeof localStorage !== 'undefined' &&
+  Boolean(localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN));
+
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
@@ -23,7 +28,8 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
-  isLoading: false,
+  // Если токен уже есть, показываем loader и восстанавливаем сессию через getCurrentUser()
+  isLoading: hasStoredToken,
   error: null,
 
   login: async (credentials) => {
@@ -88,11 +94,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   getCurrentUser: async () => {
     const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
     if (!token) {
-      set({ isAuthenticated: false, user: null });
+      set({ isAuthenticated: false, user: null, isLoading: false });
       return;
     }
 
-    set({ isLoading: true });
+    set({ isLoading: true, error: null });
     try {
       const user = await authApi.getCurrentUser();
       set({ 
@@ -101,7 +107,11 @@ export const useAuthStore = create<AuthState>((set) => ({
         isLoading: false 
       });
     } catch (error) {
-      localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+      // Не выкидываем из аккаунта из-за сетевых/серверных ошибок — очищаем токен только при 401
+      const status = (error as any)?.response?.status;
+      if (status === 401) {
+        localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+      }
       set({ 
         user: null, 
         isAuthenticated: false, 
