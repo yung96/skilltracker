@@ -121,6 +121,16 @@ export const tasksApi = {
   },
 
   /**
+   * Скачать вложение (возвращает Blob; имя файла берётся из списка вложений — original_filename)
+   */
+  async downloadAttachment(taskId: number, attachmentId: number): Promise<Blob> {
+    const response = await apiClient.get(`/tasks/${taskId}/attachments/${attachmentId}/download`, {
+      responseType: 'blob',
+    });
+    return response.data as Blob;
+  },
+
+  /**
    * Удалить вложение
    */
   async deleteAttachment(taskId: number, attachmentId: number): Promise<void> {

@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { useAuthStore } from '@/entities/user/model/store';
+import { tasksApi } from '@/shared/api/tasks';
 import { Button } from '@/shared/ui';
 import { formatDate } from '@/shared/lib/utils';
 import type { Attachment } from '@/shared/api/types';
@@ -37,6 +38,21 @@ export function TaskAttachments({ taskId, attachments, onUpload, onDelete, canEd
       await onDelete(taskId, attachmentId);
     } catch (error) {
       // Ошибка уже в store
+    }
+  };
+
+  const handleDownload = async (attachment: Attachment) => {
+    try {
+      const blob = await tasksApi.downloadAttachment(taskId, attachment.id);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = attachment.original_filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      // Ошибка отображается через глобальный обработчик или можно показать toast
+      console.error('Download failed:', error);
     }
   };
 
@@ -83,18 +99,16 @@ export function TaskAttachments({ taskId, attachments, onUpload, onDelete, canEd
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <a
-                  href={attachment.stored_path}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => handleDownload(attachment)}
+                  type="button"
                 >
-                  <Button variant="secondary" size="sm">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                  </Button>
-                </a>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                </Button>
                 {(isManager || attachment.uploaded_by_id === user?.id) && (
                   <Button
                     variant="danger"
