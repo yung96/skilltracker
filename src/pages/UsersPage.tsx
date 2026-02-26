@@ -17,10 +17,8 @@ export function UsersPage() {
     const params: any = {};
     if (roleFilter) params.role = roleFilter;
     if (search) params.search = search;
-    if (page > 1) {
-      params.page = page;
-      params.per_page = perPage;
-    }
+    params.page = page;
+    params.per_page = perPage;
     fetchUsers(params);
   }, [search, roleFilter, page, fetchUsers]);
 

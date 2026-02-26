@@ -53,10 +53,8 @@ export function AssignmentAttemptsPage() {
       try {
         const params: any = {};
         if (employeeFilter) params.employee_id = parseInt(employeeFilter);
-        if (page > 1) {
-          params.page = page;
-          params.per_page = perPage;
-        }
+        params.page = page;
+        params.per_page = perPage;
 
         const data = await quizzesApi.getAssignmentAttempts(parseInt(assignmentId), params);
         setAttempts(data);

@@ -21,10 +21,8 @@ export function QuizzesPage() {
     const params: any = {};
     if (statusFilter) params.status = statusFilter;
     if (search) params.search = search;
-    if (page > 1) {
-      params.page = page;
-      params.per_page = perPage;
-    }
+    params.page = page;
+    params.per_page = perPage;
     fetchQuizzes(params);
   }, [search, statusFilter, page, fetchQuizzes]);
 
