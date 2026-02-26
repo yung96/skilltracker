@@ -277,4 +277,14 @@ export const quizzesApi = {
     const response = await apiClient.get<QuizQuestionsAnalytics>(`/quizzes/${quizId}/analytics/questions`);
     return response.data;
   },
+
+  // ========== AI генерация ==========
+
+  /**
+   * Запустить AI-генерацию теста по теме (только для менеджеров)
+   */
+  async generateWithAI(topic: string): Promise<{ status: string; message: string }> {
+    const response = await apiClient.post<{ status: string; message: string }>('/quizzes/ai/generate', { topic });
+    return response.data;
+  },
 };

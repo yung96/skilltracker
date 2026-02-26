@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Sparkles } from 'lucide-react';
 import { useQuizzesStore } from '@/entities/quiz/model/store';
 import { Button, Loader } from '@/shared/ui';
 import { QuizFilters } from '@/features/quizzes/QuizFilters';
 import { QuizCard } from '@/features/quizzes/QuizCard';
 import { QuizCreateModal } from '@/features/quizzes/QuizCreateModal';
+import { QuizAIGenerateModal } from '@/features/quizzes/QuizAIGenerateModal';
 
 export function QuizzesPage() {
   const { quizzes, fetchQuizzes, createQuiz, deleteQuiz, isLoading } = useQuizzesStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [page, setPage] = useState(1);
@@ -64,7 +67,7 @@ export function QuizzesPage() {
             Управление тестами и вопросами
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Link to="/questions">
             <Button variant="secondary">
               <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -73,6 +76,14 @@ export function QuizzesPage() {
               Вопросы
             </Button>
           </Link>
+          <Button
+            variant="secondary"
+            onClick={() => setIsAIModalOpen(true)}
+            className="gap-2 border-dark-400/50 text-dark-500 dark:text-dark-300 hover:bg-dark-50 dark:hover:bg-dark-400/10"
+          >
+            <Sparkles className="w-4 h-4" />
+            AI-генерация
+          </Button>
           <Button onClick={() => setIsModalOpen(true)}>
             <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -145,6 +156,12 @@ export function QuizzesPage() {
         isLoading={isLoading}
         onClose={() => setIsModalOpen(false)}
         onCreate={handleCreate}
+      />
+
+      {/* Модальное окно AI-генерации */}
+      <QuizAIGenerateModal
+        isOpen={isAIModalOpen}
+        onClose={() => setIsAIModalOpen(false)}
       />
     </div>
   );

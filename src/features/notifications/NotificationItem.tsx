@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { Sparkles, AlertCircle } from 'lucide-react';
 import { Notification } from '@/shared/api';
 import { cn } from '@/shared/lib/utils';
 import { ROUTES } from '@/shared/config/constants';
@@ -38,6 +39,11 @@ export function NotificationItem({
       } else if (type === 'attempt_completed') {
         if (payload.attempt_id) {
           navigate(`/attempts/${payload.attempt_id}/result`);
+          onClose();
+        }
+      } else if (type === 'quiz_ai_ready') {
+        if (payload.quiz_id) {
+          navigate(ROUTES.QUIZZES);
           onClose();
         }
       }
@@ -95,6 +101,14 @@ export function NotificationItem({
       );
     }
 
+    if (type === 'quiz_ai_ready') {
+      return <Sparkles className="w-5 h-5" />;
+    }
+
+    if (type === 'quiz_ai_failed') {
+      return <AlertCircle className="w-5 h-5" />;
+    }
+
     return (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -134,9 +148,13 @@ export function NotificationItem({
         <div
           className={cn(
             'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center',
-            notification.is_read 
-              ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' 
-              : 'bg-primary-100 dark:bg-dark-400/20 text-primary-600 dark:text-dark-400'
+            notification.type === 'quiz_ai_failed'
+              ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+              : notification.is_read 
+                ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' 
+                : notification.type === 'quiz_ai_ready'
+                  ? 'bg-dark-100 dark:bg-dark-400/20 text-dark-600 dark:text-dark-300'
+                  : 'bg-primary-100 dark:bg-dark-400/20 text-primary-600 dark:text-dark-400'
           )}
         >
           {getIcon()}
