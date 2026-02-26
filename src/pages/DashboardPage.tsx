@@ -65,7 +65,7 @@ export function DashboardPage() {
       {/* Приветствие */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Добро пожаловать, {user?.name}! 👋
+          Добро пожаловать, {user?.name}!
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-1">
           {user?.role === 'manager' ? 'Вы управляете проектами' : 'Ваши текущие задачи'}

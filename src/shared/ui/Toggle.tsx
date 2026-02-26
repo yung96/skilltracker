@@ -7,12 +7,11 @@ interface ThemeToggleProps {
 
 export function Toggle({ className }: ThemeToggleProps) {
   const [isDark, setIsDark] = useState(() => {
-    // Проверяем localStorage или системные настройки при инициализации
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
       return savedTheme === 'dark';
     }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return true;
   });
 
   useEffect(() => {

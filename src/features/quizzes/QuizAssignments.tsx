@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Info } from 'lucide-react';
 import { useQuizzesStore } from '@/entities/quiz/model/store';
 import { useTasksStore } from '@/entities/task/model/store';
 import { useUsersStore } from '@/entities/user/model/store';
@@ -171,8 +172,9 @@ export function QuizAssignments({ quizId }: QuizAssignmentsProps) {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-3 rounded mb-4">
-            <p className="text-sm text-blue-900 dark:text-blue-300">
-              💡 Вы можете назначить тест либо пользователю напрямую, либо связать с задачей. 
+            <p className="text-sm text-blue-900 dark:text-blue-300 flex items-start gap-2">
+              <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              Вы можете назначить тест либо пользователю напрямую, либо связать с задачей. 
               При привязке к задаче, тест автоматически назначится исполнителю задачи.
             </p>
           </div>

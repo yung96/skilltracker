@@ -15,9 +15,6 @@ export function MainLayout({ children }: MainLayoutProps) {
   const location = useLocation();
   const { user, logout } = useAuthStore();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [theme] = useState(() => {
-    return localStorage.getItem('theme') || 'light';
-  });
 
   const handleLogout = async () => {
     await logout();
@@ -76,8 +73,6 @@ export function MainLayout({ children }: MainLayoutProps) {
           },
         ]),
   ];
-
-  useEffect(()=>{console.log(theme)}, [theme])
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

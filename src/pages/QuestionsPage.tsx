@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Check } from 'lucide-react';
 import { useQuizzesStore } from '@/entities/quiz/model/store';
 import { Card, Badge, Button, Modal, Loader } from '@/shared/ui';
 import { QuestionForm } from '@/features/quizzes/QuestionForm';
@@ -145,8 +146,8 @@ export function QuestionsPage() {
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Варианты ответов:</p>
                     {question.options.map((option, index) => (
                       <div key={index} className="flex items-center gap-2 text-sm">
-                        <span className={option.is_correct ? 'text-green-600 dark:text-green-400 font-medium' : 'text-gray-600 dark:text-gray-400'}>
-                          {option.is_correct && '✓ '}
+                        <span className={`flex items-center gap-1 ${option.is_correct ? 'text-green-600 dark:text-green-400 font-medium' : 'text-gray-600 dark:text-gray-400'}`}>
+                          {option.is_correct && <Check className="w-3.5 h-3.5 flex-shrink-0" />}
                           {option.text}
                         </span>
                       </div>
