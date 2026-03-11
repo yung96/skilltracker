@@ -52,14 +52,6 @@ export function DashboardPage() {
     pending: tasks.filter(t => t.status === 'pending').length,
   };
 
-  if (tasksLoading || quizzesLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader size="lg" />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       {/* Приветствие */}

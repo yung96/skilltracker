@@ -16,7 +16,6 @@ import { MyAssignmentsPage } from '@/pages/MyAssignmentsPage';
 import { AttemptPage } from '@/pages/AttemptPage';
 import { AttemptResultPage } from '@/pages/AttemptResultPage';
 import { AssignmentAttemptsPage } from '@/pages/AssignmentAttemptsPage';
-import { Loader } from '@/shared/ui';
 import { ROUTES } from '@/shared/config/constants';
 
 interface ProtectedRouteProps {
@@ -25,11 +24,7 @@ interface ProtectedRouteProps {
 }
 
 function ProtectedRoute({ children, requireManager = false }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading, user } = useAuthStore();
-
-  if (isLoading) {
-    return <Loader fullScreen />;
-  }
+  const { isAuthenticated, user } = useAuthStore();
 
   if (!isAuthenticated) {
     return <Navigate to={ROUTES.LOGIN} replace />;

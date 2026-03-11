@@ -4,8 +4,8 @@ import type { User, LoginRequest, UserCreate } from '@/shared/api/types';
 import { STORAGE_KEYS } from '@/shared/config/constants';
 
 const hasStoredToken =
-  typeof window !== 'undefined' &&
-  typeof localStorage !== 'undefined' &&
+  typeof window !== 'undefined' && /* Проверяет, что код выполняется в браузере, а не на сервере (SSR) */
+  typeof localStorage !== 'undefined' && /* В приватном режиме Safari localStorage существует, но пустой и не позволяет запись */
   Boolean(localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN));
 
 interface AuthState {

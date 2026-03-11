@@ -5,6 +5,11 @@ import { Button, Input, Select } from '@/shared/ui';
 import { ROUTES } from '@/shared/config/constants';
 import type { UserRole } from '@/shared/api/types';
 
+interface FormErrors {
+  username?: string;
+  password?: string;
+}
+
 export function RegisterPage() {
   const navigate = useNavigate();
   const { register, isLoading, error } = useAuthStore();
@@ -12,9 +17,98 @@ export function RegisterPage() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<UserRole>('manager');
+  
+  // Состояния для валидации
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<{ username?: boolean; password?: boolean }>({});
+
+  const validateField = (field: string, value: string): string | undefined => {
+    if (field === 'username') {
+      if (!value) return 'Имя пользователя обязательно';
+      if (value.length < 3) return 'Имя пользователя должно содержать минимум 3 символа';
+    }
+    
+    if (field === 'password') {
+      if (!value) return 'Пароль обязателен';
+      if (value.length < 9) return 'Пароль должен содержать минимум 9 символов';
+    }
+    
+    return undefined;
+  };
+
+  const validateForm = (): boolean => {
+    const usernameError = validateField('username', username);
+    const passwordError = validateField('password', password);
+    
+    setErrors({
+      username: usernameError,
+      password: passwordError,
+    });
+    
+    return !usernameError && !passwordError;
+  };
+
+  const isFormFilled = (): boolean => {
+    return (
+      username.trim() !== '' &&
+      name.trim() !== '' &&
+      password.trim() !== ''
+    );
+  };
+
+  const canSubmit = (): boolean => {
+    if (isLoading) return false;
+    if (!isFormFilled()) return false;
+    
+    const usernameError = validateField('username', username);
+    const passwordError = validateField('password', password);
+    
+    return !usernameError && !passwordError;
+  };
+
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setUsername(value);
+    
+    if (touched.username) {
+      const error = validateField('username', value);
+      setErrors(prev => ({ ...prev, username: error }));
+    }
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPassword(value);
+    
+    if (touched.password) {
+      const error = validateField('password', value);
+      setErrors(prev => ({ ...prev, password: error }));
+    }
+  };
+
+  const handleBlur = (field: 'username' | 'password') => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    
+    if (field === 'username') {
+      const error = validateField('username', username);
+      setErrors(prev => ({ ...prev, username: error }));
+    } else {
+      const error = validateField('password', password);
+      setErrors(prev => ({ ...prev, password: error }));
+    }
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    
+    // Отмечаем все поля как тронутые
+    setTouched({ username: true, password: true });
+    
+    // Валидируем форму
+    if (!validateForm()) {
+      return;
+    }
+    
     try {
       await register({ username, name, password, role });
       navigate(ROUTES.DASHBOARD);
@@ -42,10 +136,12 @@ export function RegisterPage() {
               label="Имя пользователя"
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="username"
+              onChange={handleUsernameChange}
+              onBlur={() => handleBlur('username')}
+              placeholder="username (минимум 3 символа)"
               required
               autoComplete="username"
+              error={touched.username ? errors.username : undefined}
             />
 
             <Input
@@ -62,10 +158,12 @@ export function RegisterPage() {
               label="Пароль"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              onChange={handlePasswordChange}
+              onBlur={() => handleBlur('password')}
+              placeholder="минимум 9 символов"
               required
               autoComplete="new-password"
+              error={touched.password ? errors.password : undefined}
             />
 
             <Select
@@ -84,10 +182,18 @@ export function RegisterPage() {
               </div>
             )}
 
+            {/* Индикатор длины пароля */}
+            {touched.password && password && password.length < 9 && (
+              <div className="text-sm text-yellow-600 dark:text-yellow-400">
+                Осталось символов: {password.length}/9
+              </div>
+            )}
+
             <Button
               type="submit"
               isLoading={isLoading}
               className="w-full"
+              disabled={!canSubmit()}
             >
               Зарегистрироваться
             </Button>
